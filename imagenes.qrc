@@ -1,10 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file>../../../../../../../Downloads/PoliciasSprites.png</file>
-        <file>../../../../../../../Downloads/Vigilantes.png</file>
-        <file>../../../../../../../Downloads/HomerSprites.png</file>
-        <file>../../../../../../../Downloads/BackGroundNoche.png</file>
-        <file>../../../../../../../OneDrive/Desktop/BackGroundCarcel.jpg</file>
-        <file>../../../../../../../OneDrive/Desktop/MenuDeOpciones.PNG</file>
+        <file>../../../Downloads/PoliciasSprites.png</file>
+        <file>../../../Downloads/Vigilantes.png</file>
+        <file>../../../Downloads/HomerSprites.png</file>
+        <file>../../../Downloads/BackGroundNoche.png</file>
+        <file>../MenuDeOpciones.PNG</file>
+        <file>imag/BackGroundCarcel.jpg</file>
     </qresource>
+    <qresource prefix="/imag"/>
 </RCC>

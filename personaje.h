@@ -2,8 +2,8 @@
 #define PERSONAJE_H
 
 #include <QObject>
-
 #include <QGraphicsPixmapItem>
+
 class Personaje: public QObject, public QGraphicsPixmapItem{
     Q_OBJECT
 public:

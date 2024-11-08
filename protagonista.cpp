@@ -1,3 +1,5 @@
 #include "protagonista.h"
 
-Protagonista::Protagonista() {}
+Protagonista::Protagonista() {
+
+}

@@ -1,7 +1,8 @@
 #ifndef ENEMIGO_H
 #define ENEMIGO_H
 
-class Enemigo
+#include "personaje.h"
+class Enemigo : public Personaje
 {
 public:
     Enemigo();

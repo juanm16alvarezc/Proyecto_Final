@@ -1,7 +1,8 @@
 #ifndef PROTAGONISTA_H
 #define PROTAGONISTA_H
+#include "personaje.h"
 
-class Protagonista
+class Protagonista  : public Personaje
 {
 public:
     Protagonista();
