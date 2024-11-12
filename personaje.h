@@ -8,6 +8,7 @@ class Personaje: public QObject, public QGraphicsPixmapItem{
     Q_OBJECT
 public:
     Personaje();
+    int Salud;
 };
 
 #endif // PERSONAJE_H

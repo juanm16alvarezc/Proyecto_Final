@@ -1,11 +1,14 @@
 <RCC>
     <qresource prefix="/">
-        <file>../../../Downloads/PoliciasSprites.png</file>
-        <file>../../../Downloads/Vigilantes.png</file>
-        <file>../../../Downloads/HomerSprites.png</file>
-        <file>../../../Downloads/BackGroundNoche.png</file>
-        <file>../MenuDeOpciones.PNG</file>
+        <file>imag/BackGroundNoche.png</file>
+        <file>imag/PoliciasSprites.png</file>
+        <file>imag/Vigilantes.png</file>
+        <file>imag/Menu inicial simpsons.jpg</file>
+        <file>imag/BackGroundNocheRecortado.png</file>
         <file>imag/BackGroundCarcel.jpg</file>
+        <file>imag/HomerSpritesAct.png</file>
+        <file>imag/PoliciasAct.png</file>
+        <file>imag/dona.png</file>
     </qresource>
     <qresource prefix="/imag"/>
 </RCC>

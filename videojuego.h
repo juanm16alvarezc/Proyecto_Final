@@ -22,19 +22,22 @@ public:
     void construirNivel();
 
 
-    void keyPressEvent(QKeyEvent *event) override;
-    void configurarEventosNivel1(QKeyEvent *event);
-    void configurarEventosNivel2(QKeyEvent *event);
+    //void keyPressEvent(QKeyEvent *event) override;
+    //void configurarEventosNivel1(QKeyEvent *event);
+    //void configurarEventosNivel2(QKeyEvent *event);
 
 private slots:
     void entrarNivel1();
     void entrarNivel2();
     void salirJuego();
+    void verificarFinDelJuego();
 
 private:
     Ui::Videojuego *ui;
     int nivelID;
     nivel* nivelActual;
+    bool finDelJuego;
+    QTimer* EndGame;
 
 
 };
