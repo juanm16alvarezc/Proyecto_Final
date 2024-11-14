@@ -4,12 +4,17 @@
 #include <QImage>
 
 nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
-    // Crear la escena y vista
     escena = new QGraphicsScene();
     vista = new QGraphicsView(escena);
 
 
     if (nivelID == 1) {
+        textoEnemigosImpactados = new QGraphicsTextItem("Enemigos impactados: 0/10");
+        textoEnemigosImpactados->setFont(QFont("Times New Roman", 20));
+        textoEnemigosImpactados->setDefaultTextColor(Qt::green);
+        textoEnemigosImpactados->setPos(30, 750);
+        escena->addItem(textoEnemigosImpactados);
+        enemigosImpactados=0;
         maxEnemigos=10;
         enemigosActuales=0;
         vista->setFixedSize(800,800);
@@ -63,13 +68,13 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
         connect(spawnTimer, &QTimer::timeout, this, &nivel::spawnearEnemigo);
         spawnTimer->start(3000);
 
-        QTimer* comprobacionTimer = new QTimer(this);
+        comprobacionTimer = new QTimer;
         connect(comprobacionTimer, &QTimer::timeout, this, &nivel::comprobarCondiciones);
         comprobacionTimer->start(1000);
 
     } else if (nivelID == 2) {
 
-        vista->setFixedSize(1200, 800);
+        vista->setFixedSize(800, 800);
         escena->setSceneRect(0, 0, 3600, 800);
         QImage fondo(":/imag/BackGroundNocheRecortado.png");
         fondo = fondo.scaled(3600, 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -88,21 +93,61 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
         };
 
+        QList<QRect> rectangulosNivel2 = {
+            QRect(0, 0, 20, 800),
+            QRect(20, 186, 150, 20),
+            QRect(280, 0, 20, 550),
+            QRect(130, 300, 150, 20),
+            QRect(20, 430, 100, 20),
+            QRect(210, 430, 70, 20),
+            QRect(20, 600, 150, 20),
+            QRect(20, 690, 3600, 20),
+            QRect(280, 650, 150, 20),
+            QRect(380, 610, 150, 20),
+            QRect(620, 610, 200, 20),
+            QRect(780, 570, 150, 20),
+            QRect(460, 470, 300, 20),
+            QRect(300, 420, 70, 20),
+            QRect(460, 320, 300, 20),
+            QRect(930, 230, 20, 460),
+            QRect(780, 230, 150, 20),
+            QRect(1030, 200, 300, 20),
+            QRect(1450, 200, 300, 20),
+            QRect(1750, 0, 20, 400),
+            QRect(1750, 530, 20, 160),
+            QRect(1300, 300, 200, 20),
+            QRect(1650, 380, 400, 20),
+            QRect(1600, 530, 450, 20),
+            QRect(1000, 400, 200, 20),
+            QRect(1100, 600, 200, 20),
+            QRect(1350, 500, 100, 20),
+            QRect(20, 0, 3600, 20),
+            QRect(2100, 500, 150, 20),
+            QRect(2300, 430, 150, 20),
+            QRect(2100, 320, 150, 20),
+            QRect(2450, 20, 20, 200),
+            QRect(2600, 630, 150, 20),
+            QRect(2800, 580, 150, 20),
+            QRect(3000, 530, 400, 20),
+        };
+
         for (const QRect& area : areasOcupadas) {
             dibujarPared(area.x(), area.y(), area.width(), area.height(),QColorConstants::Black);
         }
-        this->areasOcupadas = areasOcupadas;
 
+        for (const QRect& rect : rectangulosNivel2) {
+            dibujarPared(rect.x(), rect.y(), rect.width(), rect.height(), QColorConstants::Gray);
+        }
 
+        this->areasOcupadas = areasOcupadas + rectangulosNivel2;
 
         prota = new Protagonista(this,escena,2);
-        prota->setPos(200, 400);
+        prota->setPos(20, 100);
         escena->addItem(prota);
 
-        /*Enemigo* enemigo2 = new Enemigo(2,*prota);
-        enemigo2->setPos(500, 400);
-        enemigos.push_back(enemigo2);
-        escena->addItem(enemigo2);*/
+        this->centrarCam = new QTimer;
+        connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
+        centrarCam->start(16);
     }
 
     prota->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -112,13 +157,21 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 }
 
 nivel::~nivel(){
-    if (spawnTimer!=nullptr){delete spawnTimer;}
-    if (vista!=nullptr){delete vista;}
-    if (escena!=nullptr){delete escena;}
-    if (prota!=nullptr){delete prota;}
+    if (spawnTimer) {
+        spawnTimer->stop();
+        delete spawnTimer;
+        spawnTimer = nullptr;
+    }
 
-    for (auto enemigo : enemigos) {
-        if (enemigo!=nullptr){delete enemigo;}
+    if (vista) {
+        vista->setParent(nullptr);
+        delete vista;
+        vista = nullptr;
+    }
+
+    if (escena) {
+        delete escena;
+        escena = nullptr;
     }
 }
 
@@ -167,8 +220,6 @@ void nivel::spawnearEnemigo() {
 
         int index = rand() % posicionesSpawn.size();
         QPoint posicionElegida = posicionesSpawn[index];
-
-        // Crear un enemigo y pasar el puntero al protagonista
         Enemigo* enemigo = new Enemigo(1, *prota);
         enemigo->setPos(posicionElegida);
 
@@ -185,25 +236,33 @@ QList<QRect> nivel::getAreasOcupadas() const {
 
 void nivel::incrementarContadorEnemigosImpactados() {
     enemigosImpactados++;
+    actualizarTextoEnemigosImpactados();
+}
+void nivel::actualizarTextoEnemigosImpactados() {
+    textoEnemigosImpactados->setPlainText("Enemigos impactados: " + QString::number(enemigosImpactados) + "/10");
 }
 
 void nivel::comprobarCondiciones() {
     if (prota->getSalud() <= 0 || (prota->getMuniciones() == 0 && enemigosImpactados<10)) {
         perder = true;
+        comprobacionTimer->stop();
+        spawnTimer->stop();
     }
-
     if (enemigosImpactados >= 10) {
         ganar = true;
+        comprobacionTimer->stop();
+        spawnTimer->stop();
     }
-    qDebug() << "Vida actual: nivel" << this->prota->getSalud();
+    qDebug()<<"la vida es"<< this->getProtagonista()->getSalud()<<Qt::endl;
+
 
     if (ganar) {
         escena->clear();
         escena->setBackgroundBrush(QColor(QColorConstants::Black));
-        QGraphicsTextItem* winText = new QGraphicsTextItem("YOU WIN");
-        winText->setDefaultTextColor(Qt::green);
-        winText->setFont(QFont("Courier New", 120, QFont::Bold));
-        winText->setPos(0, 800 / 2);
+        QGraphicsTextItem* winText = new QGraphicsTextItem("YOU WON HIS TRUST ");
+        winText->setDefaultTextColor(Qt::yellow);
+        winText->setFont(QFont("Courier New", 50, QFont::Bold));
+        winText->setPos(50, 800 / 2);
         escena->addItem(winText);
         finDelJuego=true;
     } else if (perder) {
@@ -212,11 +271,29 @@ void nivel::comprobarCondiciones() {
         QGraphicsTextItem* loseText = new QGraphicsTextItem("YOU LOSE");
         loseText->setDefaultTextColor(Qt::red);
         loseText->setFont(QFont("Courier New", 120, QFont::Bold));
-        loseText->setPos(0, 800 / 2);
+        loseText->setPos(50, 800 / 2);
         escena->addItem(loseText);
         finDelJuego=true;
     }
 }
 bool nivel::getFinDelJuego(){
     return finDelJuego;
+}
+
+void nivel::actualizarVistaConProtagonista() {
+    qreal posXProtagonista = prota->x();
+    int anchoVista = vista->width();
+    int anchoEscena = escena->width();
+
+
+    qreal nuevoCentroX = posXProtagonista - anchoVista / 2.0;
+
+
+    if (nuevoCentroX < 0) {
+        nuevoCentroX = 0;
+    } else if (nuevoCentroX + anchoVista > anchoEscena) {
+        nuevoCentroX = anchoEscena - anchoVista;
+    }
+
+    vista->setSceneRect(nuevoCentroX, 0, anchoVista, escena->height());
 }
