@@ -8,16 +8,31 @@
 
 Protagonista::Protagonista(nivel* niv, QGraphicsScene* escena, int id)
     : nivelID(id), velocidad(10), indiceSprite(0), velocidadX(0), velocidadY(0),proyectilesDisponibles(12),inmune(false), Salud(100){
+    if (nivelID==1){
+        cargarSprites();
+        textoSalud = new QGraphicsTextItem("Vida: " + QString::number(Salud));
+        textoSalud->setFont(QFont("Times New Roman", 20));
+        textoSalud->setDefaultTextColor(Qt::yellow);
+        textoSalud->setPos(600, 740);
+        escena->addItem(textoSalud);
 
-    cargarSprites();
-    Nivel=niv;
-    this->mover_= new QTimer;
-    this->escena= escena;
-    connect(mover_,SIGNAL(timeout()),this,SLOT(mover()));
-    mover_->start(80);
+        textoMuniciones = new QGraphicsTextItem("Municiones: " + QString::number(proyectilesDisponibles));
+        textoMuniciones->setFont(QFont("Times New Roman", 20));
+        textoMuniciones->setDefaultTextColor(Qt::yellow);
+        textoMuniciones->setPos(600, 770);
+        escena->addItem(textoMuniciones);
+        Nivel=niv;
+        this->mover_= new QTimer;
+        this->escena= escena;
+        connect(mover_,SIGNAL(timeout()),this,SLOT(mover()));
+        mover_->start(80);
 
-    inmunidadTimer = new QTimer(this);
-    connect(inmunidadTimer, &QTimer::timeout, this, &Protagonista::actualizarInmunidad);
+        inmunidadTimer = new QTimer(this);
+        connect(inmunidadTimer, &QTimer::timeout, this, &Protagonista::actualizarInmunidad);
+
+    }
+}
+Protagonista::Protagonista(){
 
 }
 Protagonista::~Protagonista(){
@@ -166,12 +181,12 @@ void Protagonista::golpear(){
     }
 
     if (proyectilesDisponibles <= 0) {
-        return; // No se lanzan más proyectiles si se han agotado
+        return;
     }
     proyectilesDisponibles--;
+    actualizarTextoMuniciones();
 
     indiceSprite = (indiceSprite + 1) % spritesGolpeDerecha.size();
-    // Configurar la dirección del proyectil
     qreal direccionX = 0;
     qreal direccionY = 0;
     if (ultimaDireccion == "Derecha") {
@@ -183,68 +198,52 @@ void Protagonista::golpear(){
     }else if (ultimaDireccion=="Abajo"){
         direccionY=1;
     }
-    // Crear y lanzar el proyectil
     Proyectil* proyectil = new Proyectil(x() + boundingRect().width() / 2,y() + boundingRect().height() / 2, direccionX, direccionY, Nivel);
     escena->addItem(proyectil);
 
 }
 
 void Protagonista::keyPressEvent(QKeyEvent *event) {
-    if (nivelID == 1) {
-        configurarEventosNivel1(event);
-    } else if (nivelID == 2) {
-        configurarEventosNivel2(event);
+    if (nivelID==1){
+        switch (event->key()) {
+        case Qt::Key_Up:
+            velocidadY=-velocidad;
+            velocidadX=0;
+            break;
+        case Qt::Key_Down:
+            velocidadY=velocidad;
+            velocidadX=0;
+            break;
+        case Qt::Key_Left:
+            velocidadX=-velocidad;
+            velocidadY=0;
+            break;
+        case Qt::Key_Right:
+            velocidadX=velocidad;
+            velocidadY=0;
+            break;
+        case Qt::Key_Space:
+            velocidadX=0;
+            velocidadY=0;
+            this->golpear();
+            break;
+        }
     }
+
 }
 
-void Protagonista::configurarEventosNivel1(QKeyEvent *event) {
-    switch (event->key()) {
-    case Qt::Key_Up:
-        velocidadY=-velocidad;
-        velocidadX=0;
-        break;
-    case Qt::Key_Down:
-        velocidadY=velocidad;
-        velocidadX=0;
-        break;
-    case Qt::Key_Left:
-        velocidadX=-velocidad;
-        velocidadY=0;
-        break;
-    case Qt::Key_Right:
-        velocidadX=velocidad;
-        velocidadY=0;
-        break;
-    case Qt::Key_Space:
-        velocidadX=0;
-        velocidadY=0;
-        this->golpear();
-        break;
-    }
-}
 
-void Protagonista::configurarEventosNivel2(QKeyEvent *event) {
-    switch (event->key()) {
-    case Qt::Key_Left:
-        velocidadY=0;
-        velocidadX=-velocidad;
-        break;
-    case Qt::Key_Right:
-        velocidadY=0;
-        velocidadX=velocidad;
-        break;
-    case Qt::Key_Space:
-        // saltar
-        break;
-    }
-}
+
 
 bool Protagonista::detectarColisiones() {
+
     int n = collidingItems().size();
     if (n > 0) {
         return false;
     }
     return true;
+
+
 }
 
 
@@ -264,15 +263,6 @@ void Protagonista::mover(){
         }
 
     }
-    else if(nivelID==2){
-        if (velocidadX>0){
-            this->moverDerecha();
-        }
-        if (velocidadX<0){
-            this->moverIzquierda();
-        }
-
-    }
 }
 
 void Protagonista::recibirDanio(int cantidad) {
@@ -284,7 +274,8 @@ void Protagonista::recibirDanio(int cantidad) {
     }
     qDebug() << "Vid" << Salud;
     inmune = true;
-    inmunidadTimer->start(2500);
+    inmunidadTimer->start(500);
+    actualizarTextoSalud();
 
 }
 
@@ -304,5 +295,11 @@ int Protagonista::getMuniciones() const {
     return proyectilesDisponibles;
 }
 
+void Protagonista::actualizarTextoSalud() {
+    textoSalud->setPlainText("Vida: " + QString::number(Salud));
+}
 
+void Protagonista::actualizarTextoMuniciones() {
+    textoMuniciones->setPlainText("Municiones: " + QString::number(proyectilesDisponibles));
+}
 

@@ -91,7 +91,8 @@ void Videojuego::verificarFinDelJuego(){
     if(this->nivelActual->getFinDelJuego()){
         EndGame->stop();
 
-        //delete nivelActual  //configurar los debidos liberaciones de memoria, para evitar crasheos
+        delete nivelActual;
+        nivelActual= nullptr;
         ui->setupUi(this);
         QPixmap background(":/imag/Menu inicial simpsons.jpg");
         background = background.scaled(ui->label->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -99,6 +100,10 @@ void Videojuego::verificarFinDelJuego(){
         ui->nivel1Button->setVisible(true);
         ui->nivel2Button->setVisible(true);
         ui->salirButton->setVisible(true);
+        connect(ui->nivel1Button, &QPushButton::clicked, this, &Videojuego::entrarNivel1);
+        connect(ui->nivel2Button, &QPushButton::clicked, this, &Videojuego::entrarNivel2);
+        connect(ui->salirButton, &QPushButton::clicked, this, &Videojuego::salirJuego);
+
 
     }
 

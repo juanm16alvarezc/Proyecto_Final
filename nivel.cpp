@@ -1,5 +1,6 @@
 #include "nivel.h"
-#include <QGraphicsRectItem>  // ejemplos
+#include "protagonistagravedad.h"
+#include <QGraphicsRectItem>
 #include <QBrush>
 #include <QImage>
 
@@ -14,9 +15,9 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
         textoEnemigosImpactados->setDefaultTextColor(Qt::green);
         textoEnemigosImpactados->setPos(30, 750);
         escena->addItem(textoEnemigosImpactados);
-        enemigosImpactados=0;
-        maxEnemigos=10;
-        enemigosActuales=0;
+        this->enemigosImpactados=0;
+        this->maxEnemigos=10;
+        this->enemigosActuales=0;
         vista->setFixedSize(800,800);
         escena->setSceneRect(0, 0, 800,800);
         QImage fondo(":/imag/BackGroundCarcel.jpg");
@@ -66,11 +67,15 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
         this->spawnTimer = new QTimer;
         connect(spawnTimer, &QTimer::timeout, this, &nivel::spawnearEnemigo);
-        spawnTimer->start(3000);
+        spawnTimer->start(2000);
 
         comprobacionTimer = new QTimer;
         connect(comprobacionTimer, &QTimer::timeout, this, &nivel::comprobarCondiciones);
         comprobacionTimer->start(1000);
+        prota->setFlag(QGraphicsItem::ItemIsFocusable);
+        prota->setFocus();
+
+        configurarFocoProtagonista();
 
     } else if (nivelID == 2) {
 
@@ -91,27 +96,28 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
             QRect(0, 0, grosorPared, altoEscena),
             QRect(anchoEscena - grosorPared, 0, grosorPared, altoEscena),
 
-        };
 
-        QList<QRect> rectangulosNivel2 = {
             QRect(0, 0, 20, 800),
             QRect(20, 186, 150, 20),
-            QRect(280, 0, 20, 550),
+
+            QRect(280, 0, 20, 650),
             QRect(130, 300, 150, 20),
             QRect(20, 430, 100, 20),
             QRect(210, 430, 70, 20),
             QRect(20, 600, 150, 20),
-            QRect(20, 690, 3600, 20),
-            QRect(280, 650, 150, 20),
-            QRect(380, 610, 150, 20),
-            QRect(620, 610, 200, 20),
-            QRect(780, 570, 150, 20),
-            QRect(460, 470, 300, 20),
-            QRect(300, 420, 70, 20),
-            QRect(460, 320, 300, 20),
-            QRect(930, 230, 20, 460),
+
+            QRect(280, 650, 500, 20),
+            QRect(460, 500, 470, 20),
+
+            QRect(280, 350, 250, 20),
+
+            QRect(630, 250, 30, 20),
+            QRect(450, 190, 50, 20),//salto
+
+            QRect(930, 230, 20, 600),
+
+
             QRect(780, 230, 150, 20),
-            QRect(1030, 200, 300, 20),
             QRect(1450, 200, 300, 20),
             QRect(1750, 0, 20, 400),
             QRect(1750, 530, 20, 160),
@@ -129,31 +135,31 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
             QRect(2600, 630, 150, 20),
             QRect(2800, 580, 150, 20),
             QRect(3000, 530, 400, 20),
+
         };
 
         for (const QRect& area : areasOcupadas) {
             dibujarPared(area.x(), area.y(), area.width(), area.height(),QColorConstants::Black);
         }
+        this->areasOcupadas = areasOcupadas;
 
-        for (const QRect& rect : rectangulosNivel2) {
-            dibujarPared(rect.x(), rect.y(), rect.width(), rect.height(), QColorConstants::Gray);
-        }
 
-        this->areasOcupadas = areasOcupadas + rectangulosNivel2;
 
-        prota = new Protagonista(this,escena,2);
-        prota->setPos(20, 100);
-        escena->addItem(prota);
+        prota_ = new ProtagonistaGravedad(this,escena,2);
+        prota_->setPos(30, 30);
+        escena->addItem(prota_);
+        prota_->setFlag(QGraphicsItem::ItemIsFocusable);
+        prota_->setFocus();
+        configurarFocoProtagonista_();
 
         this->centrarCam = new QTimer;
         connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
         centrarCam->start(16);
+
+
+
     }
 
-    prota->setFlag(QGraphicsItem::ItemIsFocusable);
-    prota->setFocus();
-
-    configurarFocoProtagonista();
 }
 
 nivel::~nivel(){
@@ -194,7 +200,13 @@ void nivel::configurarFocoProtagonista() {
     prota->setFocus();
 
 }
+void nivel::configurarFocoProtagonista_() {
 
+    vista->centerOn(prota_);
+    prota_->setFlag(QGraphicsItem::ItemIsFocusable);
+    prota_->setFocus();
+
+}
 QGraphicsScene *nivel::getEscena(){
     return escena;
 }
@@ -281,7 +293,7 @@ bool nivel::getFinDelJuego(){
 }
 
 void nivel::actualizarVistaConProtagonista() {
-    qreal posXProtagonista = prota->x();
+    qreal posXProtagonista = prota_->x();
     int anchoVista = vista->width();
     int anchoEscena = escena->width();
 

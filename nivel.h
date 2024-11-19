@@ -7,11 +7,12 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include"QObject"
+#include "protagonistagravedad.h"
 
 using namespace std;
 class nivel: public QObject , public QGraphicsPixmapItem
 {
-     Q_OBJECT
+    Q_OBJECT
 public:
 
     ~nivel();
@@ -25,17 +26,23 @@ public:
     QList<QRect> getAreasOcupadas() const;
     void incrementarContadorEnemigosImpactados();
     bool getFinDelJuego();
+    void actualizarTextoEnemigosImpactados();
+    void configurarFocoProtagonista_();
 
 private:
     Protagonista* prota;
+    ProtagonistaGravedad* prota_;
     QGraphicsView *vista;
     QGraphicsScene *escena;
     QList<QRect> areasOcupadas;
 
     vector<Enemigo*> enemigos;
     QTimer* spawnTimer;
+    QTimer* comprobacionTimer;
+    QTimer* centrarCam;
     int maxEnemigos;
     int enemigosActuales,enemigosImpactados;
+    QGraphicsTextItem* textoEnemigosImpactados;
 
 
     bool ganar;
@@ -44,6 +51,7 @@ private:
 private slots:
     void spawnearEnemigo();
     void comprobarCondiciones();
+    void actualizarVistaConProtagonista();
 
 
 };

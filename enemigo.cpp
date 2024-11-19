@@ -6,7 +6,7 @@
 #include <QRect>
 
 Enemigo::Enemigo(int nivelID, Protagonista& p)
-    : nivelID(nivelID), velocidad(5), mirandoDerecha(true), protagonista(p) {
+    : nivelID(nivelID), velocidad(10), mirandoDerecha(true), protagonista(p) {
 
     int nuevoAncho = 64 / 1.3;
     int nuevoAlto = 128 / 1.3;
@@ -14,20 +14,25 @@ Enemigo::Enemigo(int nivelID, Protagonista& p)
     QPixmap sprite;
     if (nivelID == 1) {
         sprite = QPixmap(":/imag/PoliciasAct.png");
+        setPixmap(sprite.copy(69, 84, (20/1.1)-1, 40/1.4));
+        setPixmap(pixmap().scaled(nuevoAncho, nuevoAlto));
+        moverTimer = new QTimer(this);
+        connect(moverTimer, &QTimer::timeout, this, &Enemigo::mover);
+        moverTimer->start(70);
+
+
     } else if (nivelID == 2) {
         sprite = QPixmap(":/images/enemigo2.png");
     }
 
-    setPixmap(sprite.copy(69, 84, (20/1.1)-1, 40/1.4));
-    setPixmap(pixmap().scaled(nuevoAncho, nuevoAlto));
-
-    moverTimer = new QTimer(this);
-    connect(moverTimer, &QTimer::timeout, this, &Enemigo::mover);
-    moverTimer->start(70);
 }
 
 Enemigo::~Enemigo() {
-    delete moverTimer;
+    if (moverTimer) {
+        moverTimer->stop();
+        delete moverTimer;
+        moverTimer = nullptr;
+    }
 }
 
 void Enemigo::mover() {

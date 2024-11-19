@@ -6,7 +6,7 @@
 #include <cmath>
 
 Proyectil::Proyectil(qreal x, qreal y, qreal direccionX, qreal direccionY, nivel *niv)
-    : velocidad(5), aceleracion(0.5), direccionX(direccionX), direccionY(direccionY), Nivel(niv) {
+    : velocidad(5), aceleracion(3), direccionX(direccionX), direccionY(direccionY), Nivel(niv) {
 
     QPixmap sprite(":/imag/dona.png");
     setPixmap(sprite.scaled(20, 20));
@@ -38,6 +38,7 @@ void Proyectil::mover() {
             }
             scene()->removeItem(enemigo);
             delete enemigo;
+            enemigo=nullptr;
             scene()->removeItem(this);
             delete this;
             return;
