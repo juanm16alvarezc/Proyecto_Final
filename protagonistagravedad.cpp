@@ -7,7 +7,7 @@ ProtagonistaGravedad::ProtagonistaGravedad(nivel *niv, QGraphicsScene *escena, i
     this->nivelID=nivelID;
     this->escena=escena;
     this->Nivel=niv;
-    this->velocidad=10;
+    this->velocidad=15;
     this->velocidadX=0;
     this->velocidadY=0;
     this->mover_= new QTimer;

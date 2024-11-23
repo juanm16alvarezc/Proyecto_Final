@@ -79,7 +79,7 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
     } else if (nivelID == 2) {
 
-        vista->setFixedSize(800, 800);
+        vista->setFixedSize(1200, 800);
         escena->setSceneRect(0, 0, 3600, 800);
         QImage fondo(":/imag/BackGroundNocheRecortado.png");
         fondo = fondo.scaled(3600, 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -108,26 +108,40 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
             QRect(280, 650, 500, 20),
             QRect(460, 500, 470, 20),
-
-            QRect(280, 350, 250, 20),
+            QRect(280, 600, 40, 20),
 
             QRect(630, 250, 30, 20),
             QRect(450, 190, 50, 20),//salto
 
-            QRect(930, 230, 20, 600),
-
-
+            QRect(930, 230, 20, 70),
+            QRect(930, 500, 20, 330),
+            QRect(930, 700, 60, 20),
+            QRect(1100, 600, -40, 20),
             QRect(780, 230, 150, 20),
-            QRect(1450, 200, 300, 20),
-            QRect(1750, 0, 20, 400),
-            QRect(1750, 530, 20, 160),
-            QRect(1300, 300, 200, 20),
-            QRect(1650, 380, 400, 20),
-            QRect(1600, 530, 450, 20),
-            QRect(1000, 400, 200, 20),
+
+
+
+            QRect(1100, 0, 20, 600),
+            QRect(1050, 400, 70, 20),
+            QRect(950, 280, 40, 20),
+
             QRect(1100, 600, 200, 20),
-            QRect(1350, 500, 100, 20),
-            QRect(20, 0, 3600, 20),
+            QRect(1100, 470, 60, 20),
+            QRect(1100, 340, 60, 20),
+            QRect(1100, 210, 60, 20),
+            QRect(1300, 320, 200, 20),
+            QRect(1300, 200, 20, 140),
+
+            QRect(1450, 700, 100, 100),
+
+            QRect(1450, 200, 300, 20),
+            QRect(1600, 530, 450, 20),
+            QRect(1650, 380, 400, 20),
+
+            QRect(1750, 0, 300, 400),
+            QRect(1750, 530, 300, 300),
+
+
             QRect(2100, 500, 150, 20),
             QRect(2300, 430, 150, 20),
             QRect(2100, 320, 150, 20),
@@ -146,15 +160,15 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
 
         prota_ = new ProtagonistaGravedad(this,escena,2);
-        prota_->setPos(30, 30);
+        prota_->setPos(1000, 30);
         escena->addItem(prota_);
         prota_->setFlag(QGraphicsItem::ItemIsFocusable);
         prota_->setFocus();
         configurarFocoProtagonista_();
 
-        this->centrarCam = new QTimer;
-        connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
-        centrarCam->start(16);
+        //this->centrarCam = new QTimer;
+        //connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
+       // centrarCam->start(16);
 
 
 
