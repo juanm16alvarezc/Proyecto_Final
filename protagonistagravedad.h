@@ -9,6 +9,7 @@ class ProtagonistaGravedad : public Protagonista {
 public slots:
     void actualizarMovimiento();
     void moverTwo();
+    void comprobarMeta();
 
 public:
     ProtagonistaGravedad(nivel *niv, QGraphicsScene *escena, int nivelID);
@@ -18,10 +19,23 @@ public:
     void detectarColisionConSuelo();
     void saltar();
     void keyPressEvent(QKeyEvent *event) ;
+    bool getMeta()const;
+    bool getPerder();
+    int getObjetosRecolectados() const;
+    void recolectarObjeto();
+    void extracted();
+    bool detectarColisiones();
+    void setPerder(bool P);
+    void moverIzquierda();
+    void moverDerecha();
+
 private:
     float aceleracionY;
     bool enSuelo;
-    QTimer* TimerG;
+    QTimer* TimerG, *TimerMeta;
+    bool llegarMeta,Perder;
+    int objetosRecolectados;
+    const int totalObjetosParaGanar = 3;
 
 };
 

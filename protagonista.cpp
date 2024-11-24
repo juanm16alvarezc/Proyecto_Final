@@ -183,8 +183,6 @@ void Protagonista::golpear(){
     if (proyectilesDisponibles <= 0) {
         return;
     }
-    proyectilesDisponibles--;
-    actualizarTextoMuniciones();
 
     indiceSprite = (indiceSprite + 1) % spritesGolpeDerecha.size();
     qreal direccionX = 0;
@@ -201,6 +199,9 @@ void Protagonista::golpear(){
     Proyectil* proyectil = new Proyectil(x() + boundingRect().width() / 2,y() + boundingRect().height() / 2, direccionX, direccionY, Nivel);
     escena->addItem(proyectil);
 
+}
+void Protagonista::reducirMuniciones(){
+    proyectilesDisponibles--;
 }
 
 void Protagonista::keyPressEvent(QKeyEvent *event) {
@@ -236,14 +237,13 @@ void Protagonista::keyPressEvent(QKeyEvent *event) {
 
 
 bool Protagonista::detectarColisiones() {
-
-    int n = collidingItems().size();
-    if (n > 0) {
-        return false;
+    if (nivelID==1){
+        int n = collidingItems().size();
+        if (n > 0) {
+            return false;
+        }
+        return true;
     }
-    return true;
-
-
 }
 
 

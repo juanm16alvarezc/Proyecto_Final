@@ -17,7 +17,7 @@ Enemigo::Enemigo(int nivelID, Protagonista& p)
         setPixmap(sprite.copy(69, 84, (20/1.1)-1, 40/1.4));
         setPixmap(pixmap().scaled(nuevoAncho, nuevoAlto));
         moverTimer = new QTimer(this);
-        connect(moverTimer, &QTimer::timeout, this, &Enemigo::mover);
+        connect(moverTimer, SIGNAL(timeout()), this, SLOT(mover()));
         moverTimer->start(70);
 
 
@@ -103,10 +103,7 @@ void Enemigo::actualizarSprite() {
     QPixmap sprite;
     if (nivelID == 1) {
         sprite = QPixmap(":/imag/PoliciasAct.png");
-    } else if (nivelID == 2) {
-        sprite = QPixmap(":/imag/PoliciasAct.png");
     }
-
     if (mirandoDerecha) {
         setPixmap(sprite.copy(69, 84, (20/1.1)-1, 40/1.4));
     } else {

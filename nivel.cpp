@@ -3,8 +3,10 @@
 #include <QGraphicsRectItem>
 #include <QBrush>
 #include <QImage>
-
-nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
+#include "objetoganar.h"
+#include "sierrarotatoria.h"
+#include "pincho.h"
+nivel::nivel(int nivelID) :nivelID(nivelID),ganar(false), perder(false),finDelJuego(false){
     escena = new QGraphicsScene();
     vista = new QGraphicsView(escena);
 
@@ -66,11 +68,11 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
 
         this->spawnTimer = new QTimer;
-        connect(spawnTimer, &QTimer::timeout, this, &nivel::spawnearEnemigo);
+        connect(spawnTimer, SIGNAL(timeout()), this, SLOT(spawnearEnemigo()));
         spawnTimer->start(2000);
 
         comprobacionTimer = new QTimer;
-        connect(comprobacionTimer, &QTimer::timeout, this, &nivel::comprobarCondiciones);
+        connect(comprobacionTimer, SIGNAL(timeout()), this, SLOT(comprobarCondiciones()));
         comprobacionTimer->start(1000);
         prota->setFlag(QGraphicsItem::ItemIsFocusable);
         prota->setFocus();
@@ -79,7 +81,7 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
     } else if (nivelID == 2) {
 
-        vista->setFixedSize(1200, 800);
+        vista->setFixedSize(800, 800);
         escena->setSceneRect(0, 0, 3600, 800);
         QImage fondo(":/imag/BackGroundNocheRecortado.png");
         fondo = fondo.scaled(3600, 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -108,14 +110,14 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 
             QRect(280, 650, 500, 20),
             QRect(460, 500, 470, 20),
-            QRect(280, 600, 40, 20),
+            QRect(280, 600, 70, 70),
 
             QRect(630, 250, 30, 20),
             QRect(450, 190, 50, 20),//salto
 
             QRect(930, 230, 20, 70),
             QRect(930, 500, 20, 330),
-            QRect(930, 700, 60, 20),
+            QRect(930, 710, 60, 20),
             QRect(1100, 600, -40, 20),
             QRect(780, 230, 150, 20),
 
@@ -142,13 +144,17 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
             QRect(1750, 530, 300, 300),
 
 
-            QRect(2100, 500, 150, 20),
+            QRect(2050, 530, 150, 20),
+            QRect(2050, 330, 150, 20),
             QRect(2300, 430, 150, 20),
-            QRect(2100, 320, 150, 20),
+            QRect(2050, 130, 170, 20),
+            QRect(2470, 220, -140, 20),
             QRect(2450, 20, 20, 200),
+
+
             QRect(2600, 630, 150, 20),
-            QRect(2800, 580, 150, 20),
-            QRect(3000, 530, 400, 20),
+            QRect(2870, 530, 150, 20),
+
 
         };
 
@@ -158,17 +164,39 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
         this->areasOcupadas = areasOcupadas;
 
 
-
+        agregarBolsas();
         prota_ = new ProtagonistaGravedad(this,escena,2);
-        prota_->setPos(1000, 30);
+        prota_->setPos(30, 30);
         escena->addItem(prota_);
         prota_->setFlag(QGraphicsItem::ItemIsFocusable);
         prota_->setFocus();
         configurarFocoProtagonista_();
+        comprobacionTimer = new QTimer;
+        connect(comprobacionTimer, SIGNAL(timeout()), this, SLOT(comprobarCondiciones()));
+        comprobacionTimer->start(1000);
 
-        //this->centrarCam = new QTimer;
-        //connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
-       // centrarCam->start(16);
+
+        sierra = new SierraRotatoria(300, 300, 200, 1.3, 6,200,200,2000,0);
+        escena->addItem(sierra);
+
+        sierra2 = new SierraRotatoria(300, 300, 200, 1.3, 6,70,70,1100,100);
+        escena->addItem(sierra2);
+
+        sierra3 = new SierraRotatoria(300, 300, 50, 1.3, 6,40,40,330,-50);
+        escena->addItem(sierra3);
+
+
+        for (int x = 2100; x < 3600; x += 50) {
+            Pincho* pincho = new Pincho();
+            pinchos.push_back(pincho);
+        }
+
+
+        agregarPinchos();
+
+        this->centrarCam = new QTimer;
+        connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
+        centrarCam->start(16);
 
 
 
@@ -177,22 +205,43 @@ nivel::nivel(int nivelID) :ganar(false), perder(false),finDelJuego(false){
 }
 
 nivel::~nivel(){
-    if (spawnTimer) {
-        spawnTimer->stop();
-        delete spawnTimer;
-        spawnTimer = nullptr;
+    if(nivelID==1){
+        if (spawnTimer) {
+            spawnTimer->stop();
+            delete spawnTimer;
+            spawnTimer = nullptr;
+        }
+
+        if (vista) {
+            vista->setParent(nullptr);
+            delete vista;
+            vista = nullptr;
+        }
+
+        if (escena) {
+            delete escena;
+            escena = nullptr;
+        }
+    }
+    else if(nivelID==2){
+        if (centrarCam) {
+            centrarCam->stop();
+            delete centrarCam;
+            centrarCam = nullptr;
+        }
+        if (vista) {
+            vista->setParent(nullptr);
+            delete vista;
+            vista = nullptr;
+        }
+
+        if (escena) {
+            delete escena;
+            escena = nullptr;
+        }
     }
 
-    if (vista) {
-        vista->setParent(nullptr);
-        delete vista;
-        vista = nullptr;
-    }
 
-    if (escena) {
-        delete escena;
-        escena = nullptr;
-    }
 }
 
 void nivel::dibujarPared(int x, int y, int ancho, int alto) {
@@ -269,38 +318,75 @@ void nivel::actualizarTextoEnemigosImpactados() {
 }
 
 void nivel::comprobarCondiciones() {
-    if (prota->getSalud() <= 0 || (prota->getMuniciones() == 0 && enemigosImpactados<10)) {
-        perder = true;
-        comprobacionTimer->stop();
-        spawnTimer->stop();
-    }
-    if (enemigosImpactados >= 10) {
-        ganar = true;
-        comprobacionTimer->stop();
-        spawnTimer->stop();
-    }
-    qDebug()<<"la vida es"<< this->getProtagonista()->getSalud()<<Qt::endl;
+    if (nivelID==1){
+        if (prota->getSalud() <= 0 || (prota->getMuniciones() <= 0 && enemigosImpactados<10)) {
+            perder = true;
+            comprobacionTimer->stop();
+            spawnTimer->stop();
+        }
+        if (enemigosImpactados >= 10) {
+            ganar = true;
+            comprobacionTimer->stop();
+            spawnTimer->stop();
+        }
+        //qDebug()<<"la vida es"<< this->getProtagonista()->getSalud()<<Qt::endl;
 
 
-    if (ganar) {
-        escena->clear();
-        escena->setBackgroundBrush(QColor(QColorConstants::Black));
-        QGraphicsTextItem* winText = new QGraphicsTextItem("YOU WON HIS TRUST ");
-        winText->setDefaultTextColor(Qt::yellow);
-        winText->setFont(QFont("Courier New", 50, QFont::Bold));
-        winText->setPos(50, 800 / 2);
-        escena->addItem(winText);
-        finDelJuego=true;
-    } else if (perder) {
-        escena->clear();
-        escena->setBackgroundBrush(QColor(QColorConstants::Black));
-        QGraphicsTextItem* loseText = new QGraphicsTextItem("YOU LOSE");
-        loseText->setDefaultTextColor(Qt::red);
-        loseText->setFont(QFont("Courier New", 120, QFont::Bold));
-        loseText->setPos(50, 800 / 2);
-        escena->addItem(loseText);
-        finDelJuego=true;
+        if (ganar) {
+            escena->clear();
+            escena->setBackgroundBrush(QColor(QColorConstants::Black));
+            QGraphicsTextItem* winText = new QGraphicsTextItem("YOU WON HIS TRUST ");
+            winText->setDefaultTextColor(Qt::yellow);
+            winText->setFont(QFont("Courier New", 50, QFont::Bold));
+            winText->setPos(50, 800 / 2);
+            escena->addItem(winText);
+            finDelJuego=true;
+        } else if (perder) {
+            escena->clear();
+            escena->setBackgroundBrush(QColor(QColorConstants::Black));
+            QGraphicsTextItem* loseText = new QGraphicsTextItem("YOU LOSE");
+            loseText->setDefaultTextColor(Qt::red);
+            loseText->setFont(QFont("Courier New", 120, QFont::Bold));
+            loseText->setPos(20, 800 / 2);
+            escena->addItem(loseText);
+            finDelJuego=true;
+        }
     }
+    else if(nivelID==2){
+        if (prota_->getMeta()==true){
+            ganar=true;
+        }
+        else if(prota_->getPerder()==true){
+            perder=true;
+        }
+        if (ganar) {
+            escena->setSceneRect(0, 0, 800,800);
+            escena->clear();
+            escena->setBackgroundBrush(QColor(QColorConstants::Black));
+            QGraphicsTextItem* winText = new QGraphicsTextItem("    GOOD JOB\n NOW ENJOY YOUR\n     FREEDOM ");
+            winText->setDefaultTextColor(Qt::yellow);
+            winText->setFont(QFont("Courier New", 50, QFont::Bold));
+            winText->setPos(50, 300);
+            escena->addItem(winText);
+            QTimer::singleShot(2000, this, [this]() {
+                finDelJuego=true;
+            });
+        } else if (perder) {
+            escena->setSceneRect(0, 0, 800,800);
+            escena->clear();
+            escena->setBackgroundBrush(QColor(QColorConstants::Black));
+            QGraphicsTextItem* loseText = new QGraphicsTextItem("YOU LOSE");
+            loseText->setDefaultTextColor(Qt::red);
+            loseText->setFont(QFont("Courier New", 120, QFont::Bold));
+            loseText->setPos(20, 800 / 2);
+            escena->addItem(loseText);
+            QTimer::singleShot(2000, this, [this]() {
+                finDelJuego=true;
+            });
+        }
+
+    }
+
 }
 bool nivel::getFinDelJuego(){
     return finDelJuego;
@@ -322,4 +408,33 @@ void nivel::actualizarVistaConProtagonista() {
     }
 
     vista->setSceneRect(nuevoCentroX, 0, anchoVista, escena->height());
+}
+
+void nivel::agregarBolsas(){
+    ObjetoGanar * bolsa= new ObjetoGanar();
+    escena->addItem(bolsa);
+    bolsa->setPos(450,135);
+    bolsas.push_back(bolsa);
+    ObjetoGanar * bolsaTwo= new ObjetoGanar();
+    escena->addItem(bolsaTwo);
+    bolsaTwo->setPos(1680,315);
+    bolsas.push_back(bolsaTwo);
+    ObjetoGanar * bolsaThree= new ObjetoGanar();
+    escena->addItem(bolsaThree);
+    bolsaThree->setPos(2060,65);
+    bolsas.push_back(bolsaThree);
+}
+
+void nivel::agregarPinchos() {
+
+    qDebug() << pinchos.size();
+    int x = 2050;
+    int altoPincho = 50;
+    int yPinchos =700;
+
+    for (auto pincho : pinchos) {
+        escena->addItem(pincho);
+        pincho->setPos(x, yPinchos);
+        x += 50;
+    }
 }

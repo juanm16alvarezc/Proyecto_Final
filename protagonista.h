@@ -10,31 +10,32 @@ class nivel;
 
 class Protagonista : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT
-public slots:
-    void mover();
+
 private slots:
     void actualizarInmunidad();
+    void mover();
 
 public: //metodos
     explicit Protagonista(nivel *niv, QGraphicsScene *escena, int nivelID);
     Protagonista();
     ~Protagonista();
-    void moverIzquierda();
-    void moverDerecha();
     void cargarSprites();
     int getSalud() const;
     int getMuniciones() const;
     void recibirDanio(int cantidad);
-    void moverAbajo();
-    void moverArriba();
     void golpear();
-    bool detectarColisiones() ;
     bool estaInmune() const;
+    void saltar();
+    void reducirMuniciones();
     void actualizarTextoSalud();
     void actualizarTextoMuniciones();
-    void saltar();
 private: //atributos
+    void moverIzquierda();
+    void moverDerecha();
+    void moverAbajo();
+    void moverArriba();
     void keyPressEvent(QKeyEvent *event);
+    bool detectarColisiones();
     int Salud;
     QVector<QPixmap> spritesGolpeDerecha,spritesGolpeIzquierda;
     int proyectilesDisponibles;

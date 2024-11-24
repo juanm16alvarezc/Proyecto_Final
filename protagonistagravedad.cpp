@@ -1,8 +1,11 @@
 #include "protagonistagravedad.h"
 #include <qevent.h>
+#include "objetoganar.h"
+#include "pincho.h"
+#include "sierrarotatoria.h"
 
 ProtagonistaGravedad::ProtagonistaGravedad(nivel *niv, QGraphicsScene *escena, int nivelID)
-    :aceleracionY(9.8), enSuelo(false){
+    :aceleracionY(9.8), enSuelo(false),llegarMeta(false),Perder(false),objetosRecolectados(0){
 
     this->nivelID=nivelID;
     this->escena=escena;
@@ -12,6 +15,7 @@ ProtagonistaGravedad::ProtagonistaGravedad(nivel *niv, QGraphicsScene *escena, i
     this->velocidadY=0;
     this->mover_= new QTimer;
     this->TimerG= new QTimer;
+    this->TimerMeta= new QTimer;
     int anchoOriginalSprite = 65;
     int altoOriginalSprite = 140;
 
@@ -49,9 +53,8 @@ ProtagonistaGravedad::ProtagonistaGravedad(nivel *niv, QGraphicsScene *escena, i
     mover_->start(80);
     connect(TimerG,SIGNAL(timeout()), this, SLOT(actualizarMovimiento()));
     TimerG->start(50);
-
-
-
+    connect(TimerMeta,SIGNAL(timeout()),this,SLOT(comprobarMeta()));
+    TimerMeta->start(30);
 }
 
 ProtagonistaGravedad::~ProtagonistaGravedad() {
@@ -88,10 +91,10 @@ void ProtagonistaGravedad::actualizarMovimiento() {
 }
 
 void ProtagonistaGravedad::saltar() {
-    if (enSuelo) {
+    //if (enSuelo) {
         velocidadY = -30;
         enSuelo = false;
-    }
+   // }
 }
 
 void ProtagonistaGravedad::keyPressEvent(QKeyEvent *event) {
@@ -104,12 +107,17 @@ void ProtagonistaGravedad::keyPressEvent(QKeyEvent *event) {
         case Qt::Key_Right:
             velocidadX=velocidad;
             break;
+
+
+        case Qt::Key_Down:
+            velocidadX=0;
+            break;
+
         case Qt::Key_Space:
             this->saltar();
             break;
         }
     }
-
 }
 void ProtagonistaGravedad::moverTwo(){
 
@@ -122,6 +130,78 @@ void ProtagonistaGravedad::moverTwo(){
         }
 
     }
+}
+
+void ProtagonistaGravedad::comprobarMeta() {
+    qDebug() << y();
+    if (x() > 2870 && y()<=430 && objetosRecolectados >= totalObjetosParaGanar) {
+        llegarMeta = true;
+        qDebug() << "meta alcanzada";
+    }
+}
+bool ProtagonistaGravedad::getMeta() const{
+    return llegarMeta;
+}
+bool ProtagonistaGravedad::getPerder() {
+    //qDebug() << Perder;
+    return Perder;
+}
+void ProtagonistaGravedad::setPerder(bool P){
+    Perder=P;
+    qDebug() << "perdiste";
+}
+
+void ProtagonistaGravedad::recolectarObjeto() {
+    objetosRecolectados++;
+}
+bool ProtagonistaGravedad::detectarColisiones() {
+    if (nivelID==2){
+        for (QGraphicsItem* item : collidingItems()) {
+            if (ObjetoGanar* bolsa = dynamic_cast<ObjetoGanar*>(item)) {
+             recolectarObjeto();
+             scene()->removeItem(bolsa);
+             delete bolsa;
+             bolsa=nullptr;
+
+            }
+            if (SierraRotatoria* sierra=dynamic_cast<SierraRotatoria*>(item)) {
+                setPerder(true);
+            }
+            if (Pincho* pincho= dynamic_cast<Pincho*>(item)) {
+                setPerder(true);
+            }
+
+        }
+        int n = collidingItems().size();
+        if (n > 0) {
+            return false;
+        }
+        return true;
+    }
+}
+
+void ProtagonistaGravedad::moverIzquierda() {
+    setPos(x() - velocidad, y());
+    if (!detectarColisiones()) {
+        setPixmap(spritesIzquierda[indiceSprite]);
+        setPos(x() + velocidad, y());
+    } else {
+        setPixmap(spritesIzquierda[indiceSprite]);
+        indiceSprite = (indiceSprite + 1) % spritesIzquierda.size();
+    }
+    ultimaDireccion = "Izquierda";
+}
+
+void ProtagonistaGravedad::moverDerecha() {
+    setPos(x() + velocidad, y());
+    if (!detectarColisiones()) {
+        setPixmap(spritesDerecha[indiceSprite]);
+        setPos(x() - velocidad, y());
+    } else {
+        setPixmap(spritesDerecha[indiceSprite]);
+        indiceSprite = (indiceSprite + 1) % spritesDerecha.size();
+    }
+    ultimaDireccion = "Derecha";
 }
 
 

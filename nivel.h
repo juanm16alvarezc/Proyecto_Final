@@ -8,6 +8,9 @@
 #include <QGraphicsPixmapItem>
 #include"QObject"
 #include "protagonistagravedad.h"
+#include "objetoganar.h"
+#include "sierrarotatoria.h"
+#include "pincho.h"
 
 using namespace std;
 class nivel: public QObject , public QGraphicsPixmapItem
@@ -28,6 +31,8 @@ public:
     bool getFinDelJuego();
     void actualizarTextoEnemigosImpactados();
     void configurarFocoProtagonista_();
+    void agregarBolsas();
+    void agregarPinchos();
 
 private:
     Protagonista* prota;
@@ -37,17 +42,22 @@ private:
     QList<QRect> areasOcupadas;
 
     vector<Enemigo*> enemigos;
+    vector<ObjetoGanar*> bolsas;
+    vector<Pincho*> pinchos;
     QTimer* spawnTimer;
     QTimer* comprobacionTimer;
     QTimer* centrarCam;
     int maxEnemigos;
     int enemigosActuales,enemigosImpactados;
     QGraphicsTextItem* textoEnemigosImpactados;
-
+    int nivelID;
 
     bool ganar;
     bool perder;
     bool finDelJuego;
+    SierraRotatoria* sierra, *sierra2, *sierra3;
+
+
 private slots:
     void spawnearEnemigo();
     void comprobarCondiciones();
