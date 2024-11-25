@@ -197,6 +197,8 @@ nivel::nivel(int nivelID) :nivelID(nivelID),ganar(false), perder(false),finDelJu
         this->centrarCam = new QTimer;
         connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
         centrarCam->start(16);
+        iniciarCronometro(120);
+
 
 
 
@@ -354,9 +356,15 @@ void nivel::comprobarCondiciones() {
     }
     else if(nivelID==2){
         if (prota_->getMeta()==true){
+            comprobacionTimer->stop();
+            timerCronometro->stop();
+            centrarCam->stop();
             ganar=true;
         }
         else if(prota_->getPerder()==true){
+            comprobacionTimer->stop();
+            timerCronometro->stop();
+            centrarCam->stop();
             perder=true;
         }
         if (ganar) {
@@ -368,6 +376,7 @@ void nivel::comprobarCondiciones() {
             winText->setFont(QFont("Courier New", 50, QFont::Bold));
             winText->setPos(50, 300);
             escena->addItem(winText);
+            vista->setSceneRect(escena->sceneRect());
             QTimer::singleShot(2000, this, [this]() {
                 finDelJuego=true;
             });
@@ -380,6 +389,7 @@ void nivel::comprobarCondiciones() {
             loseText->setFont(QFont("Courier New", 120, QFont::Bold));
             loseText->setPos(20, 800 / 2);
             escena->addItem(loseText);
+            vista->setSceneRect(escena->sceneRect());
             QTimer::singleShot(2000, this, [this]() {
                 finDelJuego=true;
             });
@@ -408,6 +418,7 @@ void nivel::actualizarVistaConProtagonista() {
     }
 
     vista->setSceneRect(nuevoCentroX, 0, anchoVista, escena->height());
+    actualizarPosicionCronometro();
 }
 
 void nivel::agregarBolsas(){
@@ -438,3 +449,36 @@ void nivel::agregarPinchos() {
         x += 50;
     }
 }
+
+void nivel::iniciarCronometro(int segundosIniciales) {
+    tiempoRestante = segundosIniciales;
+
+    textoCronometro = new QGraphicsTextItem();
+    textoCronometro->setDefaultTextColor(Qt::white);
+    textoCronometro->setFont(QFont("Times New Roman", 20));
+    textoCronometro->setPlainText(QString("TIEMPO: %1").arg(tiempoRestante));
+    escena->addItem(textoCronometro);
+
+    actualizarPosicionCronometro();
+
+    timerCronometro = new QTimer(this);
+    connect(timerCronometro, &QTimer::timeout, this, &nivel::actualizarTiempo);
+    timerCronometro->start(1000);
+}
+
+void nivel::actualizarTiempo() {
+    if (tiempoRestante > 0) {
+        tiempoRestante--;
+        textoCronometro->setPlainText(QString("Tiempo: %1").arg(tiempoRestante));
+    } else {
+        prota_->setPerder(true);
+    }
+}
+
+void nivel::actualizarPosicionCronometro() {
+    if (!vista || !textoCronometro) return;
+
+    QPointF centro = vista->mapToScene(500, 0);
+    textoCronometro->setPos(centro);
+}
+

@@ -91,10 +91,10 @@ void ProtagonistaGravedad::actualizarMovimiento() {
 }
 
 void ProtagonistaGravedad::saltar() {
-    if (enSuelo) {
+    //if (enSuelo) {
         velocidadY = -30;
         enSuelo = false;
-    }
+   // }
 }
 
 void ProtagonistaGravedad::keyPressEvent(QKeyEvent *event) {
@@ -147,6 +147,7 @@ bool ProtagonistaGravedad::getPerder() {
     return Perder;
 }
 void ProtagonistaGravedad::setPerder(bool P){
+
     Perder=P;
     qDebug() << "perdiste";
 }

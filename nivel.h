@@ -34,6 +34,9 @@ public:
     void agregarBolsas();
     void agregarPinchos();
 
+    void actualizarPosicionCronometro();
+    void iniciarCronometro(int segundosIniciales);
+
 private:
     Protagonista* prota;
     ProtagonistaGravedad* prota_;
@@ -57,11 +60,20 @@ private:
     bool finDelJuego;
     SierraRotatoria* sierra, *sierra2, *sierra3;
 
+    QGraphicsTextItem* textoCronometro;
+    QTimer* timerCronometro;
+    int tiempoRestante;
+
+
+
+
 
 private slots:
     void spawnearEnemigo();
     void comprobarCondiciones();
     void actualizarVistaConProtagonista();
+    void actualizarTiempo();
+
 
 
 };
