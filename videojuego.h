@@ -20,12 +20,6 @@ public:
     ~Videojuego();
     void setNivelID(int id);
     void construirNivel();
-
-
-    //void keyPressEvent(QKeyEvent *event) override;
-    //void configurarEventosNivel1(QKeyEvent *event);
-    //void configurarEventosNivel2(QKeyEvent *event);
-
 private slots:
     void entrarNivel1();
     void entrarNivel2();
