@@ -43,9 +43,6 @@ bool InicioSesion::verificarUsuario(const QString& usuario, const QString& contr
 }
 
 
-#include <QDebug>
-#include <QFileInfo>
-
 bool InicioSesion::registrarUsuario(const QString& usuario, const QString& contrasena) {
     QFile archivo("../usuarios.txt");
 
