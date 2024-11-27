@@ -147,7 +147,9 @@ bool ProtagonistaGravedad::getPerder() {
     return Perder;
 }
 void ProtagonistaGravedad::setPerder(bool P){
-
+    TimerG->stop();
+    mover_->stop();
+    TimerG->stop();
     Perder=P;
     qDebug() << "perdiste";
 }

@@ -197,7 +197,7 @@ nivel::nivel(int nivelID) :nivelID(nivelID),ganar(false), perder(false),finDelJu
         this->centrarCam = new QTimer;
         connect(centrarCam, SIGNAL(timeout()), this,SLOT(actualizarVistaConProtagonista()));
         centrarCam->start(16);
-        iniciarCronometro(120);
+        iniciarCronometro(100);
 
 
 
@@ -469,7 +469,7 @@ void nivel::iniciarCronometro(int segundosIniciales) {
 void nivel::actualizarTiempo() {
     if (tiempoRestante > 0) {
         tiempoRestante--;
-        textoCronometro->setPlainText(QString("Tiempo: %1").arg(tiempoRestante));
+        textoCronometro->setPlainText(QString("TIEMPO: %1").arg(tiempoRestante));
     } else {
         prota_->setPerder(true);
     }

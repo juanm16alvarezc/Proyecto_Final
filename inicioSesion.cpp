@@ -22,7 +22,7 @@ InicioSesion::~InicioSesion()
 }
 
 bool InicioSesion::verificarUsuario(const QString& usuario, const QString& contrasena) {
-    QFile archivo("../usuarios.txt");
+    QFile archivo("../../usuarios.txt");
 
     if (archivo.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&archivo);
@@ -42,9 +42,8 @@ bool InicioSesion::verificarUsuario(const QString& usuario, const QString& contr
     return false;
 }
 
-
 bool InicioSesion::registrarUsuario(const QString& usuario, const QString& contrasena) {
-    QFile archivo("../usuarios.txt");
+    QFile archivo("../../usuarios.txt");
 
     if (!archivo.exists()) {
         qDebug() << "El archivo usuarios.txt no existe en la ruta:" << QFileInfo(archivo).absoluteFilePath();
@@ -86,7 +85,7 @@ void InicioSesion::on_buttonRegistrar_clicked() {
 
 void InicioSesion::guardarUsuario(const QString &usuario, const QString &contrasena)
 {
-    QString rutaArchivo = "../usuarios.txt";
+    QString rutaArchivo = "../../usuarios.txt";
     QFile archivo(rutaArchivo);
 
     if (!archivo.open(QIODevice::Append | QIODevice::Text)) {

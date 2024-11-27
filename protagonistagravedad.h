@@ -15,15 +15,12 @@ public:
     ProtagonistaGravedad(nivel *niv, QGraphicsScene *escena, int nivelID);
     ~ProtagonistaGravedad();
 
-    void aplicarFuerza(float fuerzaX, float fuerzaY);
-    void detectarColisionConSuelo();
+
     void saltar();
     void keyPressEvent(QKeyEvent *event) ;
     bool getMeta()const;
     bool getPerder();
-    int getObjetosRecolectados() const;
     void recolectarObjeto();
-    void extracted();
     bool detectarColisiones();
     void setPerder(bool P);
     void moverIzquierda();
