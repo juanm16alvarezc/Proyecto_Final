@@ -91,10 +91,10 @@ void ProtagonistaGravedad::actualizarMovimiento() {
 }
 
 void ProtagonistaGravedad::saltar() {
-    if (enSuelo) {
+    //if (enSuelo) {
         velocidadY = -30;
         enSuelo = false;
-    }
+   // }
 }
 
 void ProtagonistaGravedad::keyPressEvent(QKeyEvent *event) {
@@ -136,6 +136,7 @@ void ProtagonistaGravedad::comprobarMeta() {
     qDebug() << y();
     if (x() > 2870 && y()<=430 && objetosRecolectados >= totalObjetosParaGanar) {
         llegarMeta = true;
+        TimerMeta->stop();
         qDebug() << "meta alcanzada";
     }
 }
@@ -149,7 +150,7 @@ bool ProtagonistaGravedad::getPerder() {
 void ProtagonistaGravedad::setPerder(bool P){
     TimerG->stop();
     mover_->stop();
-    TimerG->stop();
+    TimerMeta->stop();
     Perder=P;
     qDebug() << "perdiste";
 }
