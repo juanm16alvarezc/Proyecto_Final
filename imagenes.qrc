@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>imag/BackGroundCarcel.jpg</file>
+        <file>imag/BackGroundNocheRecortado.png</file>
+        <file>imag/cadaverNoFondo.png</file>
+        <file>imag/dona.png</file>
+        <file>imag/HomerSpritesAct.png</file>
+        <file>imag/HomerSpritesDerecha.png</file>
+        <file>imag/Menu inicial simpsons.jpg</file>
+        <file>imag/pincho-removebg-preview.png</file>
+        <file>imag/PoliciasAct.png</file>
+        <file>imag/Sierra-removebg-preview (1).png</file>
+    </qresource>
+</RCC>
